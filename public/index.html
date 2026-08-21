@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSCADA: Real-Time Industrial Process HMI & Telemetry Simulator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -13,7 +17,7 @@
         <h2>Temperature Transmitter (TT-101)</h2>
         <p><span id="temp-value">--.--</span>°C</p>
 
-        <canvas id="tempChart" width="400" height="200"></canvas>
+        <canvas id="tempChart"></canvas>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

@@ -24,8 +24,10 @@ const tempChart = new Chart(ctx , {
 
 const socket = io()
 const tempValue = document.getElementById('temp-value')
+const card = document.querySelector('.instrument-card')
 
 socket.on('telemetry_update' , (data) => {
+    const tempNum = parseFloat(data.value)
     
     if (tempValue) {
         tempValue.textContent = data.value
@@ -49,5 +51,16 @@ socket.on('telemetry_update' , (data) => {
     //Render the changes in the graph;
 
     tempChart.update()
+
+    //threshold check,
+
+    if (card) {
+        if (tempNum > 28.0) {
+            card.classList.add('alarm-high')
+
+        } else {
+            card.classList.remove('alarm-high')
+        }
+    }
 })
 
