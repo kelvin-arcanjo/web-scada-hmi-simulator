@@ -14,6 +14,15 @@ const io = new Server(server) // Attach Socket.io to the HTTP server;
 
 app.use(express.static('public'))
 
+
+io.on('connection' , (socket) => {
+    // This code runs every time a new browser tab opens the HMI;
+    console.log('New HMI connected with ID:' , socket.id)
+
+    //Sensor data streaming logic...
+})
+
+
 //Start listening for incoming connections;
 
 const PORT = 6666
