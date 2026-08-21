@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSCADA: Real-Time Industrial Process HMI & Telemetry Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <h1>Industrial SCADA HMI</h1>
@@ -11,6 +12,8 @@
     <div class="instrument-card">
         <h2>Temperature Transmitter (TT-101)</h2>
         <p><span id="temp-value">--.--</span>°C</p>
+
+        <canvas id="tempChart" width="400" height="200"></canvas>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
