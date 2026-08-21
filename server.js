@@ -25,7 +25,7 @@ io.on('connection' , (socket) => {
 
 //Start listening for incoming connections;
 
-const PORT = 6666
+const PORT = 3000
 
 //initialize the server on the PORT;
 
