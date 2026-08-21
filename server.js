@@ -23,6 +23,25 @@ io.on('connection' , (socket) => {
 })
 
 
+// Starting value for our Temperature Transmitter;
+
+let tankTemperature = 25.0
+
+// Simulate the PLC scan cycle every 500 milliseconds;
+
+setInterval(() => {
+    const fluctuation = Math.random() - 0.5
+    tankTemperature += fluctuation
+
+    // Broadcast the new reading to all connected HMIs;
+
+    io.emit('telemetry_update' , {
+        sensor: 'TT-101',
+        value: tankTemperature.toFixed(2)
+    })
+
+} , 500)
+
 //Start listening for incoming connections;
 
 const PORT = 3000
