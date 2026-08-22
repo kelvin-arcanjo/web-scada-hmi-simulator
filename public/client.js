@@ -20,13 +20,18 @@ const tempChart = new Chart(ctx , {
         datasets: [{
             label: ' Temperature (°C)',
             data: [], //Live sensor values;
+            backgroundColor: '#ff4500',
             borderColor: '#ff4500',
+            pointRadius: 2, 
+            spanGaps: true,
+            tension: 0.3,
             borderWidth: 2,
             fill: false
         }]
     },
 
     options: {
+        animation: false,
         scales: {
             x: { display: true },
             y: { suggestedMin: 10 , suggestedMax: 60 }
@@ -82,13 +87,13 @@ socket.on('telemetry_update' , (data) => {
 
 ackBtn.addEventListener('click' , () => {
     alarmAcknowledged = true
-    card.classList.remove('alarm-high')
+    if (card) card.classList.remove('alarm-high')
 })
 
 //Heater Control Command Event;
 
 heaterBtn.addEventListener('click' , () => {
-    heaterBtn = !heaterState
+    heaterState = !heaterState
     socket.emit('toggle_heater' , { state: heaterState })
 })
 
