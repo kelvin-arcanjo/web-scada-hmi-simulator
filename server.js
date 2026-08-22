@@ -10,16 +10,24 @@ const app = express()
 const server = http.createServer(app)
 const io = new Server(server) // Attach Socket.io to the HTTP server;
 
+//heaterState;
+
+let heaterState = false;
+
 //Serve the Frontend HMI;
 
 app.use(express.static('public'))
 
 
 io.on('connection' , (socket) => {
-    // This code runs every time a new browser tab opens the HMI;
-    console.log('New HMI connected with ID:' , socket.id)
+    // Send current header status to newly connected clients;
+    socket.emit('heater_status' , heaterState)
 
-    //Sensor data streaming logic...
+    // Receive control commands from the HMI;
+    socket.on('toggle_heater' , (data) => {
+    heaterState = data.state
+    io.emit('heater_status' , heaterState) // Broadcast status update;
+   })
 })
 
 
@@ -27,11 +35,18 @@ io.on('connection' , (socket) => {
 
 let tankTemperature = 25.0
 
-// Simulate the PLC scan cycle every 500 milliseconds;
+// Update the interval loop to affect temperature based on heater state,
 
 setInterval(() => {
-    const fluctuation = Math.random() - 0.5
-    tankTemperature += fluctuation
+    const fluctuation = Math.random() - 0.48
+
+    if (heaterState) {
+        tankTemperature += Math.random() * 0.8 + 0.1
+
+    } else {
+        tankTemperature += fluctuation
+    }
+    
 
     // Broadcast the new reading to all connected HMIs;
 

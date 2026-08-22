@@ -14,10 +14,19 @@
     <h1>Industrial SCADA HMI</h1>
 
     <div class="instrument-card">
-        <h2>Temperature Transmitter (TT-101)</h2>
-        <p><span id="temp-value">--.--</span>°C</p>
+        <div class="card-header">
+            <h2>Temperature Transmitter (TT-101)</h2>
+            <span id="status-badge" class="badge normal">NORMAL</span>
+        </div>
 
-        <canvas id="tempChart"></canvas>
+        <p><span id="temp-value">--.--</span> °C</p>
+
+        <canvas id="tempChart" width="400" height="200"></canvas>
+
+        <div class="control-panel">
+            <button id="ack-btn" class="btn btn-ack">ACK ALARM</button>
+            <button id="heater-btn" class="btn btn-heater">HEATER: OFF</button>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

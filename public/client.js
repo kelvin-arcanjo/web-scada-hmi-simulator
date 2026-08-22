@@ -1,3 +1,15 @@
+let alarmAcknowledged = false
+let heaterState = false
+
+const statusBadge = document.getElementById('status-badge')
+const ackBtn = document.getElementById('ack-btn')
+const heaterBtn = document.getElementById('heater-btn')
+
+const socket = io()
+const tempValue = document.getElementById('temp-value')
+const card = document.querySelector('.instrument-card')
+
+
 // Connects to the server hosting the page;
 
 const ctx = document.getElementById('tempChart').getContext('2d')
@@ -17,21 +29,15 @@ const tempChart = new Chart(ctx , {
     options: {
         scales: {
             x: { display: true },
-            y: { suggestedMin: 10 , suggestedMax: 40 }
+            y: { suggestedMin: 10 , suggestedMax: 60 }
         }
     }
 })
 
-const socket = io()
-const tempValue = document.getElementById('temp-value')
-const card = document.querySelector('.instrument-card')
-
 socket.on('telemetry_update' , (data) => {
     const tempNum = parseFloat(data.value)
     
-    if (tempValue) {
-        tempValue.textContent = data.value
-    }
+    if (tempValue) tempValue.textContent = data.value;
 
     //Current Timestamp on X axis (labels);
 
@@ -52,15 +58,45 @@ socket.on('telemetry_update' , (data) => {
 
     tempChart.update()
 
-    //threshold check,
+    //Alarm & Badge State Machine;
 
-    if (card) {
-        if (tempNum > 28.0) {
+    if (tempNum > 28.0) {
+        statusBadge.textContent = 'HIGH ALARM';
+        statusBadge.className = 'badge alarm';
+
+        if (!alarmAcknowledged && card) {
             card.classList.add('alarm-high')
-
-        } else {
-            card.classList.remove('alarm-high')
         }
-    }
+
+    } else {
+        alarmAcknowledged = false
+        statusBadge.textContent = 'NORMAL'
+        statusBadge.className = 'badge normal'
+        
+        if (card) card.classList.remove('alarm-high')
+    }     
+})
+
+
+//Alarm Acknowledged Click Event;
+
+ackBtn.addEventListener('click' , () => {
+    alarmAcknowledged = true
+    card.classList.remove('alarm-high')
+})
+
+//Heater Control Command Event;
+
+heaterBtn.addEventListener('click' , () => {
+    heaterBtn = !heaterState
+    socket.emit('toggle_heater' , { state: heaterState })
+})
+
+//Sync Heater State across sessions;
+
+socket.on('heater_status' , (state) => {
+    heaterState = state
+    heaterBtn.textContent = `HEATER: ${state ? 'ON' : 'OFF'}`
+    heaterBtn.classList.toggle('active', state);
 })
 

@@ -13,6 +13,26 @@ body {
     padding: 2rem;
 }
 
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge {
+    background-color: green;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.control-panel {
+    display: flex;
+    gap: 12px;
+    margin-top: 1.5rem;
+}
+
 .instrument-card {
     max-width: 650px;
     margin: auto;
@@ -43,5 +63,42 @@ body {
     font-size: 2.5rem;
     font-weight: 700;
     color: #58a6ff;
+}
+
+.badge.alarm {
+    background-color: #da3633;
+    color: #ffffff;
+}
+
+.btn-heater.active {
+    background-color: #f85149;
+    border-color: #f85149;
+    color: #ffffff;
+}
+
+button#ack-btn {
+    background-color: rgba(95, 4, 34, 0.596);
+    color: white;
+    padding: 6px;
+    font-size: 0.75rem;
+    border: 2px solid #305e66;
+    border-radius: 8px;
+}
+
+button#heater-btn {
+    background-color: rgba(4, 84, 95, 0.596);
+    color: white;
+    padding: 6px;
+    font-size: 0.75rem;
+    border: 2px solid #305e66;
+    border-radius: 8px;
+}
+
+button#ack-btn:hover {
+    background-color: rgba(36, 1, 13, 0.829);
+}
+
+button#heater-btn:hover {
+    background-color: rgb(2, 44, 49);
 }
 
