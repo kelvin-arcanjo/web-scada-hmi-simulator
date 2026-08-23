@@ -1,35 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSCADA: Real-Time Industrial Process HMI & Telemetry Simulator</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industrial SCADA HMI</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Industrial SCADA HMI</h1>
+  <h1>Industrial SCADA HMI</h1>
 
+  <div class="scada-dashboard">
+    <!-- CARD 1: RESERVOIR TANK (TK-101) -->
     <div class="instrument-card">
-        <div class="card-header">
-            <h2>Temperature Transmitter (TT-101)</h2>
-            <span id="status-badge" class="badge normal">NORMAL</span>
+      <h2>Reservoir Tank (TK-101)</h2>
+      
+      <div class="tank-container">
+        <div class="tank-body">
+          <div id="tank-liquid" class="tank-liquid" style="height: 45%;">
+            <span id="tank-level-text">45.0%</span>
+          </div>
         </div>
+      </div>
 
-        <p><span id="temp-value">--.--</span> °C</p>
-
-        <canvas id="tempChart" width="400" height="200"></canvas>
-
-        <div class="control-panel">
-            <button id="ack-btn" class="btn btn-ack">ACK ALARM</button>
-            <button id="heater-btn" class="btn btn-heater">HEATER: OFF</button>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h4>LEVEL (LT-101)</h4>
+          <p><span id="level-val">45.0</span> %</p>
         </div>
+        <div class="metric-card">
+          <h4>PRESSURE (PT-101)</h4>
+          <p><span id="pressure-val">1.00</span> bar</p>
+        </div>
+        <div class="metric-card">
+          <h4>FLOW RATE (FT-101)</h4>
+          <p><span id="flow-val">0.0</span> L/min</p>
+        </div>
+      </div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="client.js"></script>
+    <!-- CARD 2: TEMPERATURE TRANSMITTER (TT-101) & CONTROLS -->
+    <div class="instrument-card">
+      <div class="card-header">
+        <h2>Temperature Transmitter (TT-101)</h2>
+        <span id="status-badge" class="badge normal">NORMAL</span>
+      </div>
+      <p class="temp-readout"><span id="temp-value">--.--</span> °C</p>
+      
+      <canvas id="tempChart" width="400" height="180"></canvas>
+
+      <div class="control-panel">
+        <button id="ack-btn" class="btn btn-ack">ACK ALARM</button>
+        <button id="heater-btn" class="btn btn-control">HEATER: OFF</button>
+        <button id="pump-btn" class="btn btn-control">INLET PUMP: OFF</button>
+        <button id="valve-btn" class="btn btn-control">OUTLET VALVE: CLOSED</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="client.js"></script>
 </body>
 </html>

@@ -1,107 +1,145 @@
-let alarmAcknowledged = false
-let heaterState = false
+// --- STATE VARIABLES ---
+let alarmAcknowledged = false;
+let heaterState = false;
+let pumpState = false;
+let valveState = false;
 
-const statusBadge = document.getElementById('status-badge')
-const ackBtn = document.getElementById('ack-btn')
-const heaterBtn = document.getElementById('heater-btn')
+// --- DOM REFERENCES ---
+const socket = io();
 
-const socket = io()
-const tempValue = document.getElementById('temp-value')
-const card = document.querySelector('.instrument-card')
+// Instrumentation & Telemetry Elements
+const tempValue = document.getElementById('temp-value');
+const levelVal = document.getElementById('level-val');
+const pressureVal = document.getElementById('pressure-val');
+const flowVal = document.getElementById('flow-val');
 
+// Tank Visuals & Alarm Badges
+const tankLiquid = document.getElementById('tank-liquid');
+const tankLevelText = document.getElementById('tank-level-text');
+const statusBadge = document.getElementById('status-badge');
+const card = document.querySelector('.instrument-card');
 
-// Connects to the server hosting the page;
+// Control Buttons
+const ackBtn = document.getElementById('ack-btn');
+const heaterBtn = document.getElementById('heater-btn');
+const pumpBtn = document.getElementById('pump-btn');
+const valveBtn = document.getElementById('valve-btn');
 
-const ctx = document.getElementById('tempChart').getContext('2d')
-const tempChart = new Chart(ctx , {
+// --- CHART.JS SETUP ---
+const ctx = document.getElementById('tempChart').getContext('2d');
+const tempChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: [], //Time stamps;
+        labels: [],
         datasets: [{
-            label: ' Temperature (°C)',
-            data: [], //Live sensor values;
-            backgroundColor: '#ff4500',
+            label: 'Temperature (°C)',
+            data: [],
             borderColor: '#ff4500',
-            pointRadius: 2, 
-            spanGaps: true,
-            tension: 0.3,
             borderWidth: 2,
+            pointRadius: 3,
+            spanGaps: true,
             fill: false
         }]
     },
-
     options: {
         animation: false,
         scales: {
             x: { display: true },
-            y: { suggestedMin: 10 , suggestedMax: 60 }
+            y: { suggestedMin: 10, suggestedMax: 60 }
         }
     }
-})
+});
 
-socket.on('telemetry_update' , (data) => {
-    const tempNum = parseFloat(data.value)
-    
-    if (tempValue) tempValue.textContent = data.value;
+// --- REAL-TIME TELEMETRY LISTENER ---
+socket.on('telemetry_update', (data) => {
+    const tempNum = parseFloat(data.temperature);
 
-    //Current Timestamp on X axis (labels);
+    // 1. Update Display Values
+    if (tempValue) tempValue.textContent = data.temperature;
+    if (levelVal) levelVal.textContent = data.level;
+    if (pressureVal) pressureVal.textContent = data.pressure;
+    if (flowVal) flowVal.textContent = data.flowRate;
 
-    tempChart.data.labels.push(new Date().toLocaleTimeString())
+    // 2. Update Tank Visual Height
+    if (tankLiquid && tankLevelText) {
+        tankLiquid.style.height = `${data.level}%`;
+        tankLevelText.textContent = `${data.level}%`;
+    }
 
-    //Add the temperature value received to dataset;
-
-    tempChart.data.datasets[0].data.push(data.value)
-
-    //Limite the points on the graph;
+    // 3. Update Chart
+    tempChart.data.labels.push(new Date().toLocaleTimeString());
+    tempChart.data.datasets[0].data.push(tempNum);
 
     if (tempChart.data.labels.length > 20) {
-        tempChart.data.labels.shift()
-        tempChart.data.datasets[0].data.shift()
+        tempChart.data.labels.shift();
+        tempChart.data.datasets[0].data.shift();
     }
+    tempChart.update();
 
-    //Render the changes in the graph;
+    // 4. Alarm State Machine
+    if (statusBadge) {
+        if (tempNum > 28.0) {
+            statusBadge.textContent = 'HIGH ALARM';
+            statusBadge.className = 'badge alarm';
 
-    tempChart.update()
+            if (!alarmAcknowledged && card) {
+                card.classList.add('alarm-high');
+            }
+        } else {
+            alarmAcknowledged = false;
+            statusBadge.textContent = 'NORMAL';
+            statusBadge.className = 'badge normal';
 
-    //Alarm & Badge State Machine;
-
-    if (tempNum > 28.0) {
-        statusBadge.textContent = 'HIGH ALARM';
-        statusBadge.className = 'badge alarm';
-
-        if (!alarmAcknowledged && card) {
-            card.classList.add('alarm-high')
+            if (card) card.classList.remove('alarm-high');
         }
+    }
+});
 
-    } else {
-        alarmAcknowledged = false
-        statusBadge.textContent = 'NORMAL'
-        statusBadge.className = 'badge normal'
-        
-        if (card) card.classList.remove('alarm-high')
-    }     
-})
+// --- ACTUATOR CONTROL EVENTS ---
+if (ackBtn) {
+    ackBtn.addEventListener('click', () => {
+        alarmAcknowledged = true;
+        if (card) card.classList.remove('alarm-high');
+    });
+}
 
+if (heaterBtn) {
+    heaterBtn.addEventListener('click', () => {
+        heaterState = !heaterState;
+        socket.emit('toggle_heater', { state: heaterState });
+    });
+}
 
-//Alarm Acknowledged Click Event;
+if (pumpBtn) {
+    pumpBtn.addEventListener('click', () => {
+        pumpState = !pumpState;
+        socket.emit('toggle_pump', { state: pumpState });
+    });
+}
 
-ackBtn.addEventListener('click' , () => {
-    alarmAcknowledged = true
-    if (card) card.classList.remove('alarm-high')
-})
+if (valveBtn) {
+    valveBtn.addEventListener('click', () => {
+        valveState = !valveState;
+        socket.emit('toggle_valve', { state: valveState });
+    });
+}
 
-//Heater Control Command Event;
+// --- SYNC PROCESS STATES ACROSS CLIENTS ---
+socket.on('process_status', (state) => {
+    heaterState = state.heaterOn;
+    pumpState = state.pumpOn;
+    valveState = state.valveOpen;
 
-heaterBtn.addEventListener('click' , () => {
-    heaterState = !heaterState
-    socket.emit('toggle_heater' , { state: heaterState })
-})
-
-//Sync Heater State across sessions;
-
-socket.on('heater_status' , (state) => {
-    heaterState = state
-    heaterBtn.textContent = `HEATER: ${state ? 'ON' : 'OFF'}`
-    heaterBtn.classList.toggle('active', state);
-})
-
+    if (heaterBtn) {
+        heaterBtn.textContent = `HEATER: ${heaterState ? 'ON' : 'OFF'}`;
+        heaterBtn.classList.toggle('active', heaterState);
+    }
+    if (pumpBtn) {
+        pumpBtn.textContent = `INLET PUMP: ${pumpState ? 'ON' : 'OFF'}`;
+        pumpBtn.classList.toggle('active', pumpState);
+    }
+    if (valveBtn) {
+        valveBtn.textContent = `OUTLET VALVE: ${valveState ? 'OPEN' : 'CLOSED'}`;
+        valveBtn.classList.toggle('active', valveState);
+    }
+});
