@@ -149,6 +149,23 @@ h1 {
   background-color: #581c87;
 }
 
+.btn-ack:hover {
+  background-color: #591c877c;
+}
+
 .btn-control.active {
   background-color: #0284c7;
 }
+
+#heater-btn:hover{
+    background-color: #0f172a;
+}
+
+#pump-btn:hover{
+    background-color: #0f172a;
+}
+
+#valve-btn:hover{
+    background-color: #0f172a;
+}
+
