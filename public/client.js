@@ -171,3 +171,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// --- SCADA EVENT LOGGING ENGINE ---
+
+function logEvent(tag, message, severity = 'info') {
+    const logBody = document.querySelector('#event-log-body')
+    if (!logBody) return
+    const row = document.createElement('tr')
+    const timeStr = new Date().toLocaleTimeString()
+
+    let sevClass = 'sev-info'
+    if  (severity === 'warning') sevClass = 'sev-warning'
+    if (severity === 'critical') sevClass = 'sev-critical'
+
+    row.innerHTML = `
+        <td>${timeStr}</td>
+        <td><strong>${tag}</strong></td>
+        <td>${message}</td>
+        <td class="${sevClass}">${severity.toUpperCase()}</td>    
+    `
+
+    logBody.insertBefore(row, logBody.firstChild) // Keep newest on top;
+
+    // Limit log display to 15 entries;
+
+    if (logBody.children.length > 15) {
+        logBody.removeChild(logBody.lastChild);
+    }
+}
+
+//Log initial connection;
+
+logEvent('SYS-101', 'HMI Panel Initialized & Connected to SCADA Node Server', 'info')
+
+// Log interlocks in telemetry listener:
+
+socket.on('telemetry_update' , (data) => {
+    //Interlock indicator updates...
+
+    const highLevelPill = document.querySelector('#start-high-level')
+    if (highLevelPill) {
+        if (data.highLevelAlarm) {
+            highLevelPill.textContent = 'TRIPPED'
+            highLevelPill.className = 'status-pill tripped'
+
+        } else {
+            highLevelPill.textContent = 'OK'
+            highLevelPill.className = 'status-pill normal'
+        }
+    }
+})

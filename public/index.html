@@ -58,6 +58,52 @@
 </div>
   </div>
 
+  <!-- BOTTOM SCADA PANELS -->
+<div class="bottom-grid">
+    <!-- Real-Time Alarm & Event Audit Table -->
+    <div class="instrument-card event-log-card">
+        <h3>SCADA System Event & Alarm Log</h3>
+        <div class="table-container">
+            <table id="event-log-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Tag ID</th>
+                        <th>Event Description</th>
+                        <th>Severity</th>
+                    </tr>
+                </thead>
+                <tbody id="event-log-body">
+                    <!-- Events will populate dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Process Safety & Interlock Diagnostics -->
+    <div class="instrument-card interlock-card">
+        <h3>Safety Interlocks & PLC Status</h3>
+        <div class="interlock-list">
+            <div class="interlock-item">
+                <span>High Level Interlock (LA+ 80%)</span>
+                <span id="stat-high-level" class="status-pill normal">OK</span>
+            </div>
+            <div class="interlock-item">
+                <span>Dry-Burn Safety (LT- 15%)</span>
+                <span id="stat-dryburn" class="status-pill normal">OK</span>
+            </div>
+            <div class="interlock-item">
+                <span>Over-Temp Cutoff (TS+ 60°C)</span>
+                <span id="stat-overtemp" class="status-pill normal">OK</span>
+            </div>
+            <div class="interlock-item">
+                <span>Modbus / Socket Telemetry</span>
+                <span class="status-pill normal">ONLINE (1 Hz)</span>
+            </div>
+        </div>
+    </div>
+</div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="client.js"></script>
