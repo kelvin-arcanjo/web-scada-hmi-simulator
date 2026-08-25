@@ -39,22 +39,23 @@
     </div>
 
     <!-- CARD 2: TEMPERATURE TRANSMITTER (TT-101) & CONTROLS -->
-    <div class="instrument-card">
-      <div class="card-header">
-        <h2>Temperature Transmitter (TT-101)</h2>
-        <span id="status-badge" class="badge normal">NORMAL</span>
-      </div>
-      <p class="temp-readout"><span id="temp-value">--.--</span> °C</p>
-      
-      <canvas id="tempChart" width="400" height="180"></canvas>
 
-      <div class="control-panel">
-        <button id="ack-btn" class="btn btn-ack">ACK ALARM</button>
-        <button id="heater-btn" class="btn btn-control">HEATER: OFF</button>
-        <button id="pump-btn" class="btn btn-control">INLET PUMP: OFF</button>
-        <button id="valve-btn" class="btn btn-control">OUTLET VALVE: CLOSED</button>
-      </div>
+    <div class="instrument-card">
+        <h3>Temperature Transmitter (TT-101) <span id="status-badge" class="badge normal">NORMAL</span></h3>
+        <h2><span id="temp-val">25.00</span> °C</h2>
+    
+    <!-- Canvas container for Chart.js -->
+     
+    <div style="height: 180px; width: 100%; margin-bottom: 15px;">
+        <canvas id="temp-chart"></canvas>
     </div>
+
+    <!-- Actuator Buttons -->
+    <button id="btn-ack" class="btn-ack">ACK ALARM</button>
+    <button id="btn-heater">HEATER: OFF</button>
+    <button id="btn-pump">INLET PUMP: OFF</button>
+    <button id="btn-valve">OUTLET VALVE: CLOSED</button>
+</div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

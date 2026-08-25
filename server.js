@@ -1,23 +1,23 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const express = require('express')
+const http = require('http')
+const { Server } = require('socket.io')
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+const app = express()
+const server = http.createServer(app)
+const io = new Server(server)
 
-app.use(express.static('public'));
+app.use(express.static('public'))
 
 // --- PROCESS SYSTEM STATE ---
 let processState = {
-    temperature: 25.0,   // TT-101 (°C)
-    level: 45.0,         // LT-101 (%)
-    pressure: 1.0,       // PT-101 (bar)
-    flowRate: 0.0,       // FT-101 (L/min)
-    heaterOn: false,     // HE-101 Actuator
-    pumpOn: false,       // P-101 Actuator
-    valveOpen: false,     // V-101 Actuator
-    autoDraining: false  // Interlock latch state
+    temperature: 25.0,   // TT-101 (°C);
+    level: 45.0,         // LT-101 (%);
+    pressure: 1.0,       // PT-101 (bar);
+    flowRate: 0.0,       // FT-101 (L/min);
+    heaterOn: false,     // HE-101 Actuator;
+    pumpOn: false,       // P-101 Actuator;
+    valveOpen: false,     // V-101 Actuator;
+    autoDraining: false  // Interlock latch state;
 };
 
 io.on('connection', (socket) => {
@@ -25,12 +25,14 @@ io.on('connection', (socket) => {
     socket.emit('process_status', processState);
 
     socket.on('toggle_heater', (data) => {
+        // Prevent turning heater ON if tank level is dangerously low (< 15%) or over-temp (>= 60°C);
+        if (data.state && (processState.level < 15.0 || processState.temperature >= 60.0)) return;
         processState.heaterOn = data.state;
         io.emit('process_status', processState);
     });
 
     socket.on('toggle_pump', (data) => {
-        // Prevent turning on pump while auto-draining;
+        // Prevent turning on pump while auto-draining interlock is active;
         if (processState.autoDraining && data.state) return
         processState.pumpOn = data.state;
         io.emit('process_status', processState);
@@ -48,11 +50,21 @@ setInterval(() => {
 
     if (processState.heaterOn) {
         processState.temperature += 0.4 + (Math.random() * 0.1);
+
     } else if (processState.temperature > 25.0) {
         processState.temperature -= 0.15;
     }
 
-    //High-level Interlock Safety (Hysteresis: 80% -> 45%)
+    //Heater Safety Interlocks (Dry-Burn & High-Temp Cutoff);
+
+    if (processState.heaterOn) {
+        if (processState.level < 15.0 || processState.temperature >= 60.0) {
+            processState.heaterOn = false
+            io.emit('process_status' , processState)
+        }
+    }
+
+    //High-Level Interlock Safety (Hysteresis: 80% -> 45%);
 
     if (processState.level >= 80.0 && !processState.autoDraining) {
         processState.autoDraining = true
@@ -76,11 +88,7 @@ setInterval(() => {
 
     //Flow Rate Dynamics;
 
-    if (processState.valveOpen && processState.level > 0) {
-        processState.flowRate = 45.0 + (Math.random() * 2.0 - 1.0);
-    } else {
-        processState.flowRate = 0.0;
-    }
+    processState.flowRate = (processState.valveOpen && processState.level > 0)
 
     //Pressure Dynamics (Hydrostatic calculation);
 
@@ -89,10 +97,10 @@ setInterval(() => {
     //Broadcast telemetry payload;
 
     io.emit('telemetry_update', {
-        temperature: processState.temperature.toFixed(2),
-        level: processState.level.toFixed(1),
-        pressure: processState.pressure.toFixed(2),
-        flowRate: processState.flowRate.toFixed(1),
+        temperature: Number(processState.temperature).toFixed(2),
+        level: Number(processState.level).toFixed(1),
+        pressure: Number(processState.pressure).toFixed(2),
+        flowRate: Number(processState.flowRate).toFixed(1),
         highLevelAlarm: processState.level >= 80.0
     });
 }, 1000);
