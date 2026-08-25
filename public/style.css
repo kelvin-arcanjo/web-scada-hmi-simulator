@@ -258,3 +258,58 @@ button.active {
     color: #ff4d4d;
     border: 1px solid #ff4d4d;
 }
+
+
+/* --- MOBILE RESPONSIVE LAYOUT (<= 768px) --- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        width: 100%;
+        text-align: center;
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+
+    /* Stack main instrument cards vertically */
+    .scada-dashboard {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    /* Stack Level, Pressure, and Flow metric boxes */
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    /* Stack Event Log and PLC Interlock panels */
+    .bottom-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    /* Full-width touch-friendly actuator buttons */
+    button,
+    .btn-ack {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 8px;
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+
+    /* Compact event log table styling */
+    #event-log-table th, 
+    #event-log-table td {
+        padding: 8px 6px;
+        font-size: 0.72rem;
+    }
+
+    /* Reduce chart container height on narrow displays */
+    .instrument-card div[style*="height"] {
+        height: 140px !important;
+    }
+}
