@@ -9,7 +9,7 @@ const tempChart = new Chart(ctx, {
         datasets: [{
             label: 'Temperature (°C)',
             data: [],
-            borderColor: '#00d2ff',
+            borderColor: '#c26f03',
             backgroundColor: 'rgba(0, 210, 255, 0.1)',
             borderWidth: 2,
             tension: 0.4,
