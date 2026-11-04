@@ -6,7 +6,11 @@ This project bridges **Industrial Automation & Instrumentation** domain logic (P
 
 ---
 
-## 🌟 Key Features
+## System Architecture (AS-IS)
+
+![AS-IS architecture](docs/asis-architecture.drawio.png)
+
+##  Key Features
 
 * **Real-Time Telemetry Streaming:** Broadcasts process parameters ($LT$, $PT$, $FT$, $TT$) at $1\text{ Hz}$ using Socket.IO.
 * **Automated Safety Interlocks (PLC Logic):**
@@ -20,7 +24,7 @@ This project bridges **Industrial Automation & Instrumentation** domain logic (P
 
 ---
 
-## 🏷️ Instrumentation & Tag Mapping
+##  Instrumentation & Tag Mapping
 
 | Tag ID | Equipment / Instrument Description | Signal Type | Range / Threshold |
 | :--- | :--- | :--- | :--- |
@@ -35,7 +39,7 @@ This project bridges **Industrial Automation & Instrumentation** domain logic (P
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 * **Backend:** Node.js, Express.js
 * **Real-Time Telemetry:** Socket.IO (WebSockets)
@@ -44,13 +48,11 @@ This project bridges **Industrial Automation & Instrumentation** domain logic (P
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
 Ensure you have [Node.js](https://nodejs.org/) (v14 or higher) installed on your system.
-
-### Installation
 
 ### Installation
 
